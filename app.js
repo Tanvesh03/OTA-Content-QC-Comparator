@@ -1,3 +1,76 @@
+// ===== URL FETCH & PARSE =====
+
+const PROXY = 'https://api.allorigins.win/get?url=';
+
+async function fetchContent(side) {
+  const urlEl = document.getElementById(side + '-url');
+  const statusEl = document.getElementById(side + '-status');
+  const url = urlEl.value.trim();
+  if (!url) { statusEl.textContent = 'Please enter a URL.'; statusEl.className = 'fetch-status error'; return; }
+
+  statusEl.textContent = 'Fetching…'; statusEl.className = 'fetch-status loading';
+  const btn = urlEl.nextElementSibling;
+  btn.disabled = true;
+
+  try {
+    const res = await fetch(PROXY + encodeURIComponent(url));
+    const json = await res.json();
+    if (!json.contents) throw new Error('Empty response');
+    const doc = new DOMParser().parseFromString(json.contents, 'text/html');
+    parseAndFill(side, doc, url);
+    statusEl.textContent = '✓ Content fetched successfully'; statusEl.className = 'fetch-status success';
+  } catch(e) {
+    statusEl.textContent = '✗ Could not fetch. Paste content manually.'; statusEl.className = 'fetch-status error';
+  } finally { btn.disabled = false; }
+}
+
+function parseAndFill(side, doc, url) {
+  // Remove scripts/styles/nav/footer for clean text
+  ['script','style','nav','footer','header','noscript','svg','iframe'].forEach(tag => {
+    doc.querySelectorAll(tag).forEach(el => el.remove());
+  });
+
+  // --- Name ---
+  const title = (doc.querySelector('h1') || doc.querySelector('[class*="title"],[class*="name"],[itemprop="name"]') || {}).textContent
+             || doc.title || '';
+  set(side+'-name', clean(title.split('|')[0].split('-')[0]));
+
+  // --- Description ---
+  const descEl = doc.querySelector('[class*="description"],[itemprop="description"],[class*="about"],[class*="overview"]');
+  const desc = descEl ? descEl.textContent : getMainText(doc);
+  set(side+'-description', clean(desc).substring(0, 1500));
+
+  // --- Amenities ---
+  const amenEl = doc.querySelector('[class*="amenity"],[class*="amenities"],[class*="facilities"],[class*="feature"]');
+  if (amenEl) {
+    const items = [...amenEl.querySelectorAll('li,span,div')].map(el => clean(el.textContent)).filter(t => t.length > 1 && t.length < 60);
+    set(side+'-amenities', [...new Set(items)].slice(0,30).join(', '));
+  }
+
+  // --- House Rules ---
+  const rulesEl = doc.querySelector('[class*="rule"],[class*="house-rule"],[class*="policy"],[class*="policies"]');
+  if (rulesEl) {
+    const items = [...rulesEl.querySelectorAll('li,p,div')].map(el => clean(el.textContent)).filter(t => t.length > 3 && t.length < 120);
+    set(side+'-rules', [...new Set(items)].slice(0,20).join('\n'));
+  }
+
+  // --- Photos ---
+  const imgs = doc.querySelectorAll('img[src*="photo"],img[src*="image"],img[src*="img"],picture img').length;
+  if (imgs > 0) set(side+'-photos', imgs);
+
+  // --- Price ---
+  const priceMatch = (doc.body.textContent).match(/\$\s*([\d,]+(?:\.\d{1,2})?)/);
+  if (priceMatch) set(side+'-price', priceMatch[1].replace(',',''));
+}
+
+function getMainText(doc) {
+  const main = doc.querySelector('main,[role="main"],article,[class*="content"],[class*="body"]');
+  return (main || doc.body || {}).textContent || '';
+}
+
+function clean(str) { return (str||'').replace(/\s+/g,' ').trim(); }
+function set(id, val) { const el = document.getElementById(id); if(el && val) el.value = val; }
+
 /**
  * OTA Content QC Comparator - Core Logic
  * Compares property website content vs OTA listings
