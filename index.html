@@ -1,56 +1,38 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
   <title>OTA Content QC Comparator</title>
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css"/>
 </head>
 <body>
   <header>
     <div class="header-inner">
-      <div class="logo">
-        <span class="logo-icon">&#9654;</span>
-        <span class="logo-text">OTA Content QC Comparator</span>
-      </div>
+      <div class="logo"><span class="logo-icon">&#9654;</span><span class="logo-text">OTA Content QC Comparator</span></div>
       <p class="tagline">Compare property website content vs OTA listings for quality assurance</p>
     </div>
   </header>
-
   <main class="container">
     <section class="input-section">
-      <div class="input-panel" id="website-panel">
+      <div class="input-panel">
         <div class="panel-header">
           <span class="panel-badge website">Property Website</span>
           <h2>Website Content</h2>
         </div>
-        <div class="field-group">
-          <label for="website-name">Property Name</label>
-          <input type="text" id="website-name" placeholder="e.g. Ocean View Villa" />
+        <div class="url-row">
+          <input type="url" id="website-url" placeholder="https://yourproperty.com/listing" />
+          <button class="btn-fetch" onclick="fetchContent('website')">&#8597; Fetch</button>
         </div>
-        <div class="field-group">
-          <label for="website-description">Description</label>
-          <textarea id="website-description" rows="6" placeholder="Paste the property description from the website..."></textarea>
-        </div>
-        <div class="field-group">
-          <label for="website-amenities">Amenities <span class="hint">(comma-separated)</span></label>
-          <textarea id="website-amenities" rows="4" placeholder="WiFi, Pool, Air conditioning, Kitchen, Parking..."></textarea>
-        </div>
-        <div class="field-group">
-          <label for="website-rules">House Rules <span class="hint">(one per line)</span></label>
-          <textarea id="website-rules" rows="4" placeholder="No smoking&#10;No pets&#10;Check-in after 3 PM..."></textarea>
-        </div>
-        <div class="field-group">
-          <label for="website-photos">Photo Count</label>
-          <input type="number" id="website-photos" placeholder="e.g. 24" min="0" />
-        </div>
-        <div class="field-group">
-          <label for="website-price">Price per Night (USD)</label>
-          <input type="number" id="website-price" placeholder="e.g. 150" min="0" step="0.01" />
-        </div>
+        <div id="website-status" class="fetch-status"></div>
+        <div class="field-group"><label>Property Name</label><input type="text" id="website-name" placeholder="e.g. Ocean View Villa"/></div>
+        <div class="field-group"><label>Description</label><textarea id="website-description" rows="5" placeholder="Paste or fetch description..."></textarea></div>
+        <div class="field-group"><label>Amenities <span class="hint">(comma-separated)</span></label><textarea id="website-amenities" rows="3" placeholder="WiFi, Pool, Kitchen..."></textarea></div>
+        <div class="field-group"><label>House Rules <span class="hint">(one per line)</span></label><textarea id="website-rules" rows="3" placeholder="No smoking&#10;No pets..."></textarea></div>
+        <div class="field-group"><label>Photo Count</label><input type="number" id="website-photos" placeholder="e.g. 24" min="0"/></div>
+        <div class="field-group"><label>Price per Night (USD)</label><input type="number" id="website-price" placeholder="e.g. 150" min="0" step="0.01"/></div>
       </div>
-
-      <div class="input-panel" id="ota-panel">
+      <div class="input-panel">
         <div class="panel-header">
           <span class="panel-badge ota">OTA Listing</span>
           <h2>OTA Content</h2>
@@ -62,46 +44,31 @@
             <option value="other">Other</option>
           </select>
         </div>
-        <div class="field-group">
-          <label for="ota-name">Property Name</label>
-          <input type="text" id="ota-name" placeholder="e.g. Ocean View Villa" />
+        <div class="url-row">
+          <input type="url" id="ota-url" placeholder="https://airbnb.com/rooms/..." />
+          <button class="btn-fetch" onclick="fetchContent('ota')">&#8597; Fetch</button>
         </div>
-        <div class="field-group">
-          <label for="ota-description">Description</label>
-          <textarea id="ota-description" rows="6" placeholder="Paste the property description from the OTA listing..."></textarea>
-        </div>
-        <div class="field-group">
-          <label for="ota-amenities">Amenities <span class="hint">(comma-separated)</span></label>
-          <textarea id="ota-amenities" rows="4" placeholder="WiFi, Pool, Air conditioning, Kitchen, Parking..."></textarea>
-        </div>
-        <div class="field-group">
-          <label for="ota-rules">House Rules <span class="hint">(one per line)</span></label>
-          <textarea id="ota-rules" rows="4" placeholder="No smoking&#10;No pets&#10;Check-in after 3 PM..."></textarea>
-        </div>
-        <div class="field-group">
-          <label for="ota-photos">Photo Count</label>
-          <input type="number" id="ota-photos" placeholder="e.g. 20" min="0" />
-        </div>
-        <div class="field-group">
-          <label for="ota-price">Price per Night (USD)</label>
-          <input type="number" id="ota-price" placeholder="e.g. 155" min="0" step="0.01" />
-        </div>
+        <div id="ota-status" class="fetch-status"></div>
+        <div class="field-group"><label>Property Name</label><input type="text" id="ota-name" placeholder="e.g. Ocean View Villa"/></div>
+        <div class="field-group"><label>Description</label><textarea id="ota-description" rows="5" placeholder="Paste or fetch description..."></textarea></div>
+        <div class="field-group"><label>Amenities <span class="hint">(comma-separated)</span></label><textarea id="ota-amenities" rows="3" placeholder="WiFi, Pool, Kitchen..."></textarea></div>
+        <div class="field-group"><label>House Rules <span class="hint">(one per line)</span></label><textarea id="ota-rules" rows="3" placeholder="No smoking&#10;No pets..."></textarea></div>
+        <div class="field-group"><label>Photo Count</label><input type="number" id="ota-photos" placeholder="e.g. 20" min="0"/></div>
+        <div class="field-group"><label>Price per Night (USD)</label><input type="number" id="ota-price" placeholder="e.g. 155" min="0" step="0.01"/></div>
       </div>
     </section>
-
     <div class="actions">
-      <button id="compare-btn" class="btn btn-primary" onclick="runComparison()">&#9654; Run QC Comparison</button>
-      <button id="clear-btn" class="btn btn-secondary" onclick="clearAll()">&#10005; Clear All</button>
+      <button class="btn btn-primary" onclick="runComparison()">&#9654; Run QC Comparison</button>
+      <button class="btn btn-secondary" onclick="clearAll()">&#10005; Clear All</button>
       <button id="export-btn" class="btn btn-outline" onclick="exportReport()" style="display:none;">&#8681; Export Report</button>
     </div>
-
     <section id="results-section" class="results-section" style="display:none;">
       <div class="results-header">
         <h2>QC Comparison Report</h2>
         <div id="overall-score-badge" class="overall-score-badge"></div>
       </div>
       <div class="score-overview">
-        <div class="score-card" id="score-name"><div class="score-label">Property Name</div><div class="score-value"></div><div class="score-bar"><div class="score-fill"></div></div></div>
+        <div class="score-card" id="score-name"><div class="score-label">Name</div><div class="score-value"></div><div class="score-bar"><div class="score-fill"></div></div></div>
         <div class="score-card" id="score-desc"><div class="score-label">Description</div><div class="score-value"></div><div class="score-bar"><div class="score-fill"></div></div></div>
         <div class="score-card" id="score-amenities"><div class="score-label">Amenities</div><div class="score-value"></div><div class="score-bar"><div class="score-fill"></div></div></div>
         <div class="score-card" id="score-rules"><div class="score-label">House Rules</div><div class="score-value"></div><div class="score-bar"><div class="score-fill"></div></div></div>
@@ -111,11 +78,7 @@
       <div id="detailed-results" class="detailed-results"></div>
     </section>
   </main>
-
-  <footer>
-    <p>OTA Content QC Comparator &mdash; Built for hospitality professionals</p>
-  </footer>
-
+  <footer><p>OTA Content QC Comparator &mdash; Built for hospitality professionals</p></footer>
   <script src="app.js"></script>
 </body>
 </html>
