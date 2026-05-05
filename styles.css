@@ -438,3 +438,44 @@ footer {
   .score-overview { grid-template-columns: repeat(2, 1fr); }
   .logo-text { font-size: 18px; }
 }
+
+
+/* URL Fetch Row */
+.url-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.url-row input[type="url"] {
+  flex: 1;
+  background: var(--surface2);
+  color: var(--text);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 9px 12px;
+  font-size: 13px;
+}
+.url-row input[type="url"]:focus { outline: none; box-shadow: 0 0 0 3px rgba(79,142,247,0.15); }
+.btn-fetch {
+  background: var(--primary);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 16px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s;
+}
+.btn-fetch:hover { background: var(--primary-dark); }
+.btn-fetch:disabled { background: var(--border); cursor: not-allowed; }
+.fetch-status {
+  font-size: 12px;
+  min-height: 18px;
+  margin-bottom: 8px;
+  padding: 0 2px;
+}
+.fetch-status.loading { color: var(--primary); }
+.fetch-status.success { color: var(--success); }
+.fetch-status.error   { color: var(--danger); }
