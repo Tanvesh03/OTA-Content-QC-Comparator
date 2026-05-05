@@ -459,7 +459,7 @@ function runComparison() {
   document.getElementById('detailed-results').innerHTML = detailHtml;
   document.getElementById('results-section').style.display = 'block';
   document.getElementById('export-btn').style.display = 'flex';
-  document.getElementById('results-section').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  setTimeout(() => { const el = document.getElementById('results-section'); const y = el.getBoundingClientRect().top + window.scrollY - 20; window.scrollTo({ top: y, behavior: 'smooth' }); }, 100);
 }
 
 // ===== CLEAR ALL =====
